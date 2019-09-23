@@ -446,6 +446,7 @@ public class HandPoker extends Hand implements Comparable {
 	 * @return 'true' if Hand is a high card
 	 * 
 	 */
+	
 	private boolean isHighCard() {
 		boolean bisHighCard = true;
 		if ((GetCRCSize() == eRowCount.FIVE.getiRowCountItems()) && (GetCRCCount(eRow.ONE.ordinal()) == 1)) {
