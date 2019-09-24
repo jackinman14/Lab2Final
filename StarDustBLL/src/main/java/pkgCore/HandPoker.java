@@ -1,9 +1,14 @@
+// Lab Two
+// CISC181
+// Luis Ongtawco, Jack Inman, Congyu Lu
+
 package pkgCore;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 
 import pkgEnum.eCardNo;
 import pkgEnum.eHandStrength;
@@ -231,8 +236,6 @@ public class HandPoker extends Hand implements Comparable {
 		}
 		return iPos;
 	}
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// tasks begin!
 	
 	/**
 	 * @author BRG
@@ -243,8 +246,14 @@ public class HandPoker extends Hand implements Comparable {
 	 */
 	private boolean isRoyalFlush() {
 		boolean bIsRoyalFlush = false;
-		if(isStraightFlush()&&((this.getCards().get(2).geteRank())==Queen)) { 
+		if(isStraightFlush()&&((this.getCards().get(2).geteRank())==eRank.QUEEN)) { 
+			
+			
+			HandScorePoker HSP = (HandScorePoker) this.getHS();
+			HSP.seteHandStrength(eHandStrength.RoyalFlush);
+			this.setHS(HSP);
 			bIsRoyalFlush=true;
+			
 		}
 		return bIsRoyalFlush;
 	}
@@ -258,10 +267,11 @@ public class HandPoker extends Hand implements Comparable {
 	 */
 	private boolean isStraightFlush() { 
 		boolean bisStraightFlush = false;
-		// add high comparison
 		if((isStraight())&&(isFlush())) {
 			HandScorePoker HSP = (HandScorePoker) this.getHS();
 			HSP.seteHandStrength(eHandStrength.StraightFlush);
+			HSP.setLoCard(null);
+			HSP.setKickers(null);
 			this.setHS(HSP);
 			bisStraightFlush=true;
 		}
@@ -320,13 +330,23 @@ public class HandPoker extends Hand implements Comparable {
 	private boolean isFlush() {
 		boolean bisFlush = false;
 		int iCount=0;
-		for (eSuit eSuit : EnumSet.range(eSuit.HEARTS, eSuit.SPADES)) {
+		for (eSuit eSuit: EnumSet.range(eSuit.HEARTS, eSuit.SPADES)) {
 			for(Card c: this.getCards()) {
 				if(eSuit==c.geteSuit()) {
 					iCount++;
 				}
 			}
 			if(iCount==5) {
+				HandScorePoker HSP = (HandScorePoker) this.getHS();
+				HSP.setHiCard(this.getCards().get(0));
+				HSP.setLoCard(null);
+				ArrayList<Card> kickers=new ArrayList<Card>();
+				for(int kick=1;kick<super.getCards().size();kick++) {
+					kickers.add(super.getCards().get(kick));
+				}
+				HSP.setKickers(kickers);
+				HSP.seteHandStrength(eHandStrength.Flush);
+				this.setHS(HSP);
 				bisFlush=true;
 				break;
 			}
@@ -351,7 +371,7 @@ public class HandPoker extends Hand implements Comparable {
 		if ((this.getCards().get(0).geteRank() == eRank.ACE) && (this.getCards().get(1).geteRank() == eRank.FIVE)) {
 			i = 1;
 		}
-		for (i; i < this.getCards().size()-1; i++) {
+		for (; i < this.getCards().size()-1; i++) {
 			diffOfi = (this.getCards().get(i).geteRank().getiRankNbr() - this.getCards().get(i + 1).geteRank().getiRankNbr());
 			if (diffOfi == 1) {
 				HandScorePoker HSP = (HandScorePoker) this.getHS();
@@ -460,9 +480,6 @@ public class HandPoker extends Hand implements Comparable {
 		}
 		return bisHighCard;
 	}
-
-	// end of tasks!
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	/**
 	 * @author BRG
